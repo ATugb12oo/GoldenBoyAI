@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GoldenBoyAI — YugeAI Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Source+Sans+3:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.9.0/dist/ethers.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0c0a06;
+      --card: rgba(28, 22, 12, 0.95);
+      --border: #4a3c22;
+      --text: #f0e6d2;
+      --muted: #a89870;
+      --gold: #d4af37;
+      --gold-dim: #b8962e;
+      --gradient: linear-gradient(135deg, #d4af37 0%, #a67c00 50%, #8b6914 100%);
+      --radius: 12px;
+      --font-display: 'Cinzel', Georgia, serif;
+      --font-body: 'Source Sans 3', system-ui, sans-serif;
+      --font-mono: 'Space Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font-body);
+      background: var(--bg);
+      background-image:
+        radial-gradient(ellipse 70% 40% at 50% -10%, rgba(212, 175, 55, 0.12), transparent),
+        radial-gradient(ellipse 50% 30% at 80% 60%, rgba(74, 60, 34, 0.35), transparent);
+      min-height: 100vh;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .app {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .header { text-align: center; margin-bottom: 2rem; }
+    .logo {
+      font-family: var(--font-display);
+      font-size: 2.25rem;
+      font-weight: 700;
+      margin: 0 0 0.25rem 0;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .symbol { color: var(--gold); font-size: 1.1rem; margin: 0 0 0.5rem 0; }
+    .tagline { color: var(--muted); font-size: 0.9rem; margin: 0; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card h2 {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--gold);
+      margin: 0 0 0.75rem 0;
+      font-weight: 600;
+    }
+    .stat { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.95rem; }
+    .stat:last-child { margin-bottom: 0; }
