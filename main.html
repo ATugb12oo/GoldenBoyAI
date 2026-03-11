@@ -1108,3 +1108,77 @@
         tab.classList.add('active');
         var p = document.getElementById(panelId);
         if (p) p.classList.add('active');
+      });
+    });
+  }
+
+  async function lookupGrab() {
+    if (!contract && !bindContract()) return;
+    var id = parseInt(el('lookupGrabId').value || '0', 10);
+    var box = el('lookupGrabResult');
+    try {
+      var r = await contract.getGrab(id);
+      box.querySelector('pre').textContent = 'intensityBps: ' + String(r[0]) + '\nloggedAt: ' + String(r[1]) + '\nepochId: ' + String(r[2]) + '\nfinalized: ' + r[3];
+      box.style.display = 'block';
+    } catch (e) {
+      box.querySelector('pre').textContent = 'Error: ' + (e.message || e);
+      box.style.display = 'block';
+    }
+  }
+  async function lookupDeal() {
+    if (!contract && !bindContract()) return;
+    var id = parseInt(el('lookupDealId').value || '0', 10);
+    var box = el('lookupDealResult');
+    try {
+      var r = await contract.getDeal(id);
+      box.querySelector('pre').textContent = 'amountWei: ' + String(r[0]) + '\ncreatedAtBlock: ' + String(r[1]) + '\nclosedAtBlock: ' + String(r[2]) + '\nparty: ' + r[3] + '\nactive: ' + r[4] + '\nclosed: ' + r[5];
+      box.style.display = 'block';
+    } catch (e) {
+      box.querySelector('pre').textContent = 'Error: ' + (e.message || e);
+      box.style.display = 'block';
+    }
+  }
+  async function lookupSlot() {
+    if (!contract && !bindContract()) return;
+    var idx = parseInt(el('lookupSlotIdx').value || '0', 10);
+    var box = el('lookupSlotResult');
+    try {
+      var r = await contract.getSlot(idx);
+      box.querySelector('pre').textContent = 'bandBps: ' + String(r[0]) + '\nsealedAt: ' + String(r[1]) + '\nvariantId: ' + String(r[2]) + '\nsealed: ' + r[3];
+      box.style.display = 'block';
+    } catch (e) {
+      box.querySelector('pre').textContent = 'Error: ' + (e.message || e);
+      box.style.display = 'block';
+    }
+  }
+  async function getCovfefe() {
+    if (!contract && !bindContract()) return;
+    var keyHex = (el('covfefeKey').value || '').trim().replace(/^0x/, '');
+    if (keyHex.length !== 64) {
+      el('covfefeResult').querySelector('pre').textContent = 'Key must be 64 hex chars (32 bytes).';
+      el('covfefeResult').style.display = 'block';
+      return;
+    }
+    var box = el('covfefeResult');
+    try {
+      var keyBytes = ethers.getBytes('0x' + keyHex);
+      var key32 = ethers.zeroPadValue(keyBytes.length === 32 ? keyBytes : keyBytes.slice(0, 32), 32);
+      var r = await contract.getCovfefe(key32);
+      box.querySelector('pre').textContent = 'value: 0x' + ethers.hexlify(r[0]).slice(2) + '\nupdatedBlock: ' + String(r[1]);
+      box.style.display = 'block';
+    } catch (e) {
+      box.querySelector('pre').textContent = 'Error: ' + (e.message || e);
+      box.style.display = 'block';
+    }
+  }
+  async function checkClaim() {
+    if (!contract && !bindContract()) return;
+    var idx = parseInt(el('claimIndex').value || '0', 10);
+    var box = el('claimResult');
+    try {
+      var amount = await contract.claimRewardAmount(idx);
+      box.querySelector('pre').textContent = 'claimIndex: ' + idx + '\nrewardWei: ' + String(amount) + '\nhasReward: ' + (amount && amount > 0n ? 'Yes' : 'No');
+      box.style.display = 'block';
+    } catch (e) {
+      box.querySelector('pre').textContent = 'Error: ' + (e.message || e);
+      box.style.display = 'block';
