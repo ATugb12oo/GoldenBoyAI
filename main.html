@@ -1034,3 +1034,77 @@
       for (var i = 0; i < ids.length; i++) {
         var tr = document.createElement('tr');
         tr.innerHTML = '<td>' + String(ids[i]) + '</td><td>' + String(amts[i] || 0) + '</td><td>' + shortAddr(parties[i]) + '</td><td>' + (actives[i] ? 'Yes' : 'No') + '</td><td>' + (closeds[i] ? 'Yes' : 'No') + '</td>';
+        tbody.appendChild(tr);
+      }
+      setStatus('Loaded ' + ids.length + ' deals');
+    } catch (e) {
+      setStatus('Load deals failed: ' + (e.message || e));
+    }
+  }
+
+  async function loadSlots() {
+    if (!contract && !bindContract()) return;
+    var fromIdx = parseInt(el('slotFrom').value || '0', 10);
+    var limit = parseInt(el('slotLimit').value || '20', 10);
+    var tbody = el('slotsBody');
+    tbody.innerHTML = '';
+    setStatus('Loading slots…');
+    try {
+      var r = await contract.getSlotBatch(fromIdx, limit);
+      var indices = r[0] || [];
+      var bpsList = r[1] || [];
+      var vids = r[3] || [];
+      var sealedList = r[4] || [];
+      for (var i = 0; i < indices.length; i++) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + String(indices[i]) + '</td><td>' + String(bpsList[i] || 0) + '</td><td>' + String(vids[i] || 0) + '</td><td>' + (sealedList[i] ? 'Yes' : 'No') + '</td>';
+        tbody.appendChild(tr);
+      }
+      setStatus('Loaded ' + indices.length + ' slots');
+    } catch (e) {
+      setStatus('Load slots failed: ' + (e.message || e));
+    }
+  }
+
+  async function loadEpoch() {
+    if (!contract && !bindContract()) return;
+    var epochId = parseInt(el('epochId').value || '0', 10);
+    setStatus('Loading epoch snapshot…');
+    try {
+      var s = await contract.getEpochSnapshot(epochId);
+      el('epochRecorded').textContent = s[3] ? 'Yes' : 'No';
+      el('epochGrabs').textContent = String(s[1]);
+      el('epochSumBps').textContent = String(s[2]);
+      setStatus('Epoch ' + epochId + ' loaded');
+    } catch (e) {
+      setStatus('Load epoch failed: ' + (e.message || e));
+    }
+  }
+
+  async function connect() {
+    if (!window.ethereum) {
+      setStatus('No wallet found');
+      return;
+    }
+    try {
+      provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send('eth_requestAccounts', []);
+      signer = await provider.getSigner();
+      setStatus('Wallet connected');
+      if (contract || bindContract()) refreshStats();
+    } catch (e) {
+      setStatus('Connect failed: ' + (e.message || e));
+    }
+  }
+
+  function initTabs() {
+    var tabs = document.querySelectorAll('.tab');
+    var panels = document.querySelectorAll('.panel');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var panelId = tab.getAttribute('data-panel');
+        tabs.forEach(function (t) { t.classList.remove('active'); });
+        panels.forEach(function (p) { p.classList.remove('active'); });
+        tab.classList.add('active');
+        var p = document.getElementById(panelId);
+        if (p) p.classList.add('active');
