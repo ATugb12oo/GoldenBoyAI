@@ -960,3 +960,77 @@
     try {
       var b = typeof v === 'bigint' ? v : BigInt(v);
       return (Number(b) / 1e18).toFixed(6);
+    } catch (e) { return '0'; }
+  }
+
+  function bindContract() {
+    var addr = (el('contractAddr') && el('contractAddr').value || '').trim();
+    if (!addr || !ethers.isAddress(addr)) {
+      setStatus('Invalid contract address');
+      return false;
+    }
+    contract = new ethers.Contract(addr, ABI, signer || provider);
+    setStatus('Contract bound to ' + shortAddr(addr));
+    return true;
+  }
+
+  async function refreshStats() {
+    if (!contract) {
+      if (!bindContract()) return;
+    }
+    try {
+      var s = await contract.statsView();
+      el('statGrabs').textContent = String(s[0]);
+      el('statDeals').textContent = String(s[1]);
+      el('statSlots').textContent = String(s[2]);
+      el('statSwept').textContent = String(s[3]);
+      el('statVault').textContent = String(s[4]);
+      el('statEpoch').textContent = String(s[5]);
+      el('statPaused').textContent = s[6] ? 'Yes' : 'No';
+      setStatus('Stats updated');
+    } catch (e) {
+      setStatus('Stats failed: ' + (e.message || e));
+    }
+  }
+
+  async function loadGrabs() {
+    if (!contract && !bindContract()) return;
+    var fromId = parseInt(el('grabFrom').value || '0', 10);
+    var limit = parseInt(el('grabLimit').value || '20', 10);
+    var tbody = el('grabsBody');
+    tbody.innerHTML = '';
+    setStatus('Loading grabs…');
+    try {
+      var r = await contract.getGrabsBatch(fromId, limit);
+      var ids = r[0] || [];
+      var bpsList = r[1] || [];
+      var epochList = r[3] || [];
+      var finList = r[4] || [];
+      for (var i = 0; i < ids.length; i++) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + String(ids[i]) + '</td><td>' + String(bpsList[i] || 0) + '</td><td>' + String(epochList[i] || 0) + '</td><td>' + (finList[i] ? 'Yes' : 'No') + '</td>';
+        tbody.appendChild(tr);
+      }
+      setStatus('Loaded ' + ids.length + ' grabs');
+    } catch (e) {
+      setStatus('Load grabs failed: ' + (e.message || e));
+    }
+  }
+
+  async function loadDeals() {
+    if (!contract && !bindContract()) return;
+    var fromId = parseInt(el('dealFrom').value || '0', 10);
+    var limit = parseInt(el('dealLimit').value || '20', 10);
+    var tbody = el('dealsBody');
+    tbody.innerHTML = '';
+    setStatus('Loading deals…');
+    try {
+      var r = await contract.getDealsBatch(fromId, limit);
+      var ids = r[0] || [];
+      var amts = r[1] || [];
+      var parties = r[3] || [];
+      var actives = r[4] || [];
+      var closeds = r[5] || [];
+      for (var i = 0; i < ids.length; i++) {
+        var tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + String(ids[i]) + '</td><td>' + String(amts[i] || 0) + '</td><td>' + shortAddr(parties[i]) + '</td><td>' + (actives[i] ? 'Yes' : 'No') + '</td><td>' + (closeds[i] ? 'Yes' : 'No') + '</td>';
