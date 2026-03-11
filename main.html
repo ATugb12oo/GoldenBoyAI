@@ -368,3 +368,77 @@
       </section>
 
       <section class="card">
+        <h2>Covfefe</h2>
+        <p class="help">Read covfefe value by key (bytes32 hex, 64 chars without 0x).</p>
+        <div class="lookup-row">
+          <input id="covfefeKey" class="in" placeholder="Key (64 hex chars)" maxlength="66" />
+          <button type="button" id="getCovfefeBtn" class="btn btn-sm">Get covfefe</button>
+        </div>
+        <div id="covfefeResult" class="result-box" style="display:none"><pre></pre></div>
+      </section>
+
+      <section class="card">
+        <h2>Big-league claim</h2>
+        <p class="help">Check if a claim index has a reward set.</p>
+        <div class="lookup-row">
+          <input id="claimIndex" class="in" type="number" min="0" placeholder="Claim index" />
+          <button type="button" id="checkClaimBtn" class="btn btn-sm">Check reward</button>
+        </div>
+        <div id="claimResult" class="result-box" style="display:none"><pre></pre></div>
+      </section>
+
+      <section class="card">
+        <h2>Config &amp; constants</h2>
+        <div class="stat"><span>Commander</span><span id="cfgCommander">—</span></div>
+        <div class="stat"><span>Treasury</span><span id="cfgTreasury">—</span></div>
+        <div class="stat"><span>Oracle</span><span id="cfgOracle">—</span></div>
+        <div class="stat"><span>Deal maker</span><span id="cfgDealMaker">—</span></div>
+        <div class="stat"><span>Vault</span><span id="cfgVault">—</span></div>
+        <div class="stat"><span>Genesis time</span><span id="cfgGenesis">—</span></div>
+        <div class="stat"><span>Sweep cap (wei)</span><span id="cfgSweepCap">—</span></div>
+        <div class="stat"><span>Protocol rev</span><span id="cfgRev">—</span></div>
+        <button type="button" id="loadConfigBtn" class="btn btn-outline" style="margin-top:0.5rem">Load config</button>
+      </section>
+
+      <section class="card">
+        <h2>Epoch &amp; chain info</h2>
+        <div class="stat"><span>Current epoch ID</span><span id="infoEpoch">—</span></div>
+        <div class="stat"><span>Epoch end timestamp</span><span id="infoEpochEnd">—</span></div>
+        <div class="stat"><span>Time until next epoch (sec)</span><span id="infoEpochRemain">—</span></div>
+        <div class="stat"><span>Contract balance (wei)</span><span id="infoBalance">—</span></div>
+        <div class="stat"><span>Remaining sweep cap (wei)</span><span id="infoSweepRemain">—</span></div>
+        <button type="button" id="loadChainInfoBtn" class="btn btn-outline mt-1">Refresh chain info</button>
+      </section>
+
+      <section class="card">
+        <h2>Quick actions</h2>
+        <p class="help muted mb-1">Refresh all stats and config in one go.</p>
+        <button type="button" id="refreshAllBtn" class="btn">Refresh all</button>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>GoldenBoyAI — YugeAI dashboard. Not financial or regulatory advice.</p>
+      <p class="fs-xs mt-1">Grabs: claw-style intensity logs per epoch. Deals: open/close by deal maker. Slots: reserve then seal by commander.</p>
+      <p class="fs-xs">Covfefe: oracle key-value store. Big-league claims: one-time rewards. Config: immutable roles and caps.</p>
+    </footer>
+  </div>
+  <!--
+    Additional UI notes: Contract address must be EIP-55 or valid 0x+40 hex. Wallet required for connect; read-only views work without signer.
+    Stats refresh fetches statsView(). Batch loaders use getGrabsBatch(fromId, limit) etc.; limit is capped by contract (e.g. 81 for grabs).
+    Epoch snapshot is recorded per epoch by commander; sumIntensityBps and totalGrabs are aggregated for that epoch.
+    Covfefe key: 64 hex characters (32 bytes). Claim reward: check claimRewardAmount(claimIndex); 0 means none set.
+    Config: getConfig() returns all role addresses and genesis/sweepCap/deployBlock. Protocol rev is from protocolRevision().
+    Chain info: currentEpochIndex(), currentEpochEndTime(), contractBalance(), remainingSweepCap(). Time remaining = epochEnd - now (sec).
+    Refresh all calls refreshStats(), loadConfig(), loadChainInfo() in sequence. Tabs switch between Grabs/Deals/Slots/Epochs panels.
+    doc 1. doc 2. doc 3. doc 4. doc 5. doc 6. doc 7. doc 8. doc 9. doc 10.
+    doc 11. doc 12. doc 13. doc 14. doc 15. doc 16. doc 17. doc 18. doc 19. doc 20.
+    doc 21. doc 22. doc 23. doc 24. doc 25. doc 26. doc 27. doc 28. doc 29. doc 30.
+    doc 31. doc 32. doc 33. doc 34. doc 35. doc 36. doc 37. doc 38. doc 39. doc 40.
+    doc 41. doc 42. doc 43. doc 44. doc 45. doc 46. doc 47. doc 48. doc 49. doc 50.
+    doc 51. doc 52. doc 53. doc 54. doc 55. doc 56. doc 57. doc 58. doc 59. doc 60.
+    doc 61. doc 62. doc 63. doc 64. doc 65. doc 66. doc 67. doc 68. doc 69. doc 70.
+    doc 71. doc 72. doc 73. doc 74. doc 75. doc 76. doc 77. doc 78. doc 79. doc 80.
+    doc 81. doc 82. doc 83. doc 84. doc 85. doc 86. doc 87. doc 88. doc 89. doc 90.
+    doc 91. doc 92. doc 93. doc 94. doc 95. doc 96. doc 97. doc 98. doc 99. doc 100.
+    doc 101. doc 102. doc 103. doc 104. doc 105. doc 106. doc 107. doc 108. doc 109. doc 110.
