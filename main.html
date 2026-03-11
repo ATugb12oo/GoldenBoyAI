@@ -1182,3 +1182,67 @@
     } catch (e) {
       box.querySelector('pre').textContent = 'Error: ' + (e.message || e);
       box.style.display = 'block';
+    }
+  }
+  async function loadConfig() {
+    if (!contract && !bindContract()) return;
+    try {
+      var c = await contract.getConfig();
+      el('cfgCommander').textContent = shortAddr(c[0]);
+      el('cfgTreasury').textContent = shortAddr(c[1]);
+      el('cfgOracle').textContent = shortAddr(c[2]);
+      el('cfgDealMaker').textContent = shortAddr(c[3]);
+      el('cfgVault').textContent = shortAddr(c[4]);
+      el('cfgGenesis').textContent = String(c[5]);
+      el('cfgSweepCap').textContent = String(c[6]);
+      var rev = await contract.protocolRevision();
+      el('cfgRev').textContent = String(rev);
+      setStatus('Config loaded');
+    } catch (e) {
+      setStatus('Config failed: ' + (e.message || e));
+    }
+  }
+  async function loadChainInfo() {
+    if (!contract && !bindContract()) return;
+    try {
+      var epochIdx = await contract.currentEpochIndex();
+      var epochEnd = await contract.currentEpochEndTime();
+      var balance = await contract.contractBalance();
+      var sweepRemain = await contract.remainingSweepCap();
+      var now = Math.floor(Date.now() / 1000);
+      var remain = epochEnd > now ? (epochEnd - now) : 0;
+      el('infoEpoch').textContent = String(epochIdx);
+      el('infoEpochEnd').textContent = String(epochEnd);
+      el('infoEpochRemain').textContent = String(remain);
+      el('infoBalance').textContent = String(balance);
+      el('infoSweepRemain').textContent = String(sweepRemain);
+      setStatus('Chain info updated');
+    } catch (e) {
+      setStatus('Chain info failed: ' + (e.message || e));
+    }
+  }
+  function refreshAll() {
+    if (!contract && !bindContract()) return;
+    refreshStats();
+    loadConfig();
+    loadChainInfo();
+  }
+  if (el('connectBtn')) el('connectBtn').addEventListener('click', connect);
+  if (el('refreshBtn')) el('refreshBtn').addEventListener('click', function () { if (contract || bindContract()) refreshStats(); });
+  if (el('loadGrabsBtn')) el('loadGrabsBtn').addEventListener('click', loadGrabs);
+  if (el('loadDealsBtn')) el('loadDealsBtn').addEventListener('click', loadDeals);
+  if (el('loadSlotsBtn')) el('loadSlotsBtn').addEventListener('click', loadSlots);
+  if (el('loadEpochBtn')) el('loadEpochBtn').addEventListener('click', loadEpoch);
+  if (el('lookupGrabBtn')) el('lookupGrabBtn').addEventListener('click', lookupGrab);
+  if (el('lookupDealBtn')) el('lookupDealBtn').addEventListener('click', lookupDeal);
+  if (el('lookupSlotBtn')) el('lookupSlotBtn').addEventListener('click', lookupSlot);
+  if (el('getCovfefeBtn')) el('getCovfefeBtn').addEventListener('click', getCovfefe);
+  if (el('checkClaimBtn')) el('checkClaimBtn').addEventListener('click', checkClaim);
+  if (el('loadConfigBtn')) el('loadConfigBtn').addEventListener('click', loadConfig);
+  if (el('loadChainInfoBtn')) el('loadChainInfoBtn').addEventListener('click', loadChainInfo);
+  if (el('refreshAllBtn')) el('refreshAllBtn').addEventListener('click', refreshAll);
+  initTabs();
+})();
+  </script>
+</body>
+</html>
