@@ -220,3 +220,77 @@
     .stat-row:last-child { border-bottom: none; }
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .empty-state { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.9rem; }
+    .loading { opacity: 0.7; pointer-events: none; }
+    .error-text { color: #c94a4a; font-size: 0.85rem; }
+    .success-text { color: #4a8f5a; font-size: 0.85rem; }
+    .badge { display: inline-block; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.7rem; font-weight: 600; }
+    .badge-gold { background: rgba(212,175,55,0.25); color: var(--gold); }
+    .badge-muted { background: rgba(168,152,112,0.2); color: var(--muted); }
+    .link { color: var(--gold); text-decoration: none; }
+    .link:hover { text-decoration: underline; }
+    .mono { font-family: var(--font-mono); }
+    .uppercase { text-transform: uppercase; letter-spacing: 0.05em; }
+    .tracking-wide { letter-spacing: 0.05em; }
+    .shadow-sm { box-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+    .border-gold { border-color: var(--gold); }
+    .bg-card { background: var(--card); }
+    .text-gold { color: var(--gold); }
+    .text-muted { color: var(--muted); }
+    .text-white { color: var(--text); }
+    .fs-sm { font-size: 0.85rem; }
+    .fs-xs { font-size: 0.75rem; }
+    .fw-6 { font-weight: 600; }
+    .fw-7 { font-weight: 700; }
+    .rounded-sm { border-radius: 6px; }
+    .rounded-lg { border-radius: 16px; }
+    .p-2 { padding: 1rem; }
+    .m-0 { margin: 0; }
+    .mt-3 { margin-top: 1.5rem; }
+    .mb-3 { margin-bottom: 1.5rem; }
+    .px-1 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .py-1 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .d-flex { display: flex; }
+    .d-block { display: block; }
+    .d-none { display: none; }
+    .align-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .flex-wrap { flex-wrap: wrap; }
+    .w-100 { width: 100%; }
+    .h-auto { height: auto; }
+    .overflow-auto { overflow: auto; }
+    .position-relative { position: relative; }
+    .position-absolute { position: absolute; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <h1 class="logo">GoldenBoyAI</h1>
+      <p class="symbol">YugeAI Dashboard</p>
+      <p class="tagline">Big-league grabs, deals, covfefe &amp; golden epochs</p>
+    </header>
+
+    <main class="main">
+      <section class="card">
+        <h2>Contract</h2>
+        <div class="row">
+          <label for="contractAddr">YugeAI contract address</label>
+          <input id="contractAddr" class="in" type="text" placeholder="0x..." />
+        </div>
+        <div class="row">
+          <button type="button" id="connectBtn" class="btn">Connect wallet</button>
+          <button type="button" id="refreshBtn" class="btn btn-outline">Refresh</button>
+        </div>
+        <p id="status">Enter contract address and connect.</p>
+      </section>
+
+      <section class="card">
+        <h2>Stats</h2>
+        <div class="stat"><span>Grabs</span><span id="statGrabs">—</span></div>
+        <div class="stat"><span>Deals</span><span id="statDeals">—</span></div>
+        <div class="stat"><span>Slots</span><span id="statSlots">—</span></div>
+        <div class="stat"><span>Total swept (wei)</span><span id="statSwept">—</span></div>
+        <div class="stat"><span>Vault balance (wei)</span><span id="statVault">—</span></div>
+        <div class="stat"><span>Current epoch</span><span id="statEpoch">—</span></div>
+        <div class="stat"><span>Paused</span><span id="statPaused">—</span></div>
+      </section>
