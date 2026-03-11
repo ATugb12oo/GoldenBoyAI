@@ -294,3 +294,77 @@
         <div class="stat"><span>Current epoch</span><span id="statEpoch">—</span></div>
         <div class="stat"><span>Paused</span><span id="statPaused">—</span></div>
       </section>
+
+      <section class="card">
+        <div class="tabs">
+          <button type="button" class="tab active" data-panel="grabs">Grabs</button>
+          <button type="button" class="tab" data-panel="deals">Deals</button>
+          <button type="button" class="tab" data-panel="slots">Slots</button>
+          <button type="button" class="tab" data-panel="epochs">Epochs</button>
+        </div>
+        <div id="grabs" class="panel active">
+          <div class="row">
+            <input id="grabFrom" class="in" placeholder="From grab id" />
+            <input id="grabLimit" class="in" placeholder="Limit (e.g. 20)" style="margin-top:6px" />
+            <button type="button" id="loadGrabsBtn" class="btn" style="margin-top:6px">Load grabs</button>
+          </div>
+          <table><thead><tr><th>ID</th><th>Intensity BPS</th><th>Epoch</th><th>Finalized</th></tr></thead><tbody id="grabsBody"></tbody></table>
+        </div>
+        <div id="deals" class="panel">
+          <div class="row">
+            <input id="dealFrom" class="in" placeholder="From deal id" />
+            <input id="dealLimit" class="in" placeholder="Limit" style="margin-top:6px" />
+            <button type="button" id="loadDealsBtn" class="btn" style="margin-top:6px">Load deals</button>
+          </div>
+          <table><thead><tr><th>ID</th><th>Amount (wei)</th><th>Party</th><th>Active</th><th>Closed</th></tr></thead><tbody id="dealsBody"></tbody></table>
+        </div>
+        <div id="slots" class="panel">
+          <div class="row">
+            <input id="slotFrom" class="in" placeholder="From slot index" />
+            <input id="slotLimit" class="in" placeholder="Limit" style="margin-top:6px" />
+            <button type="button" id="loadSlotsBtn" class="btn" style="margin-top:6px">Load slots</button>
+          </div>
+          <table><thead><tr><th>Index</th><th>Band BPS</th><th>Variant ID</th><th>Sealed</th></tr></thead><tbody id="slotsBody"></tbody></table>
+        </div>
+        <div id="epochs" class="panel">
+          <div class="row">
+            <input id="epochId" class="in" placeholder="Epoch ID" />
+            <button type="button" id="loadEpochBtn" class="btn" style="margin-top:6px">Load snapshot</button>
+          </div>
+          <div class="stat"><span>Recorded</span><span id="epochRecorded">—</span></div>
+          <div class="stat"><span>Total grabs</span><span id="epochGrabs">—</span></div>
+          <div class="stat"><span>Sum intensity BPS</span><span id="epochSumBps">—</span></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Lookup single item</h2>
+        <div class="panel-section">
+          <h3 class="card-h3">Grab by ID</h3>
+          <div class="lookup-row">
+            <input id="lookupGrabId" class="in" type="number" min="0" placeholder="Grab ID" />
+            <button type="button" id="lookupGrabBtn" class="btn btn-sm">Get grab</button>
+          </div>
+          <div id="lookupGrabResult" class="result-box" style="display:none"><pre></pre></div>
+        </div>
+        <div class="divider"></div>
+        <div class="panel-section">
+          <h3 class="card-h3">Deal by ID</h3>
+          <div class="lookup-row">
+            <input id="lookupDealId" class="in" type="number" min="0" placeholder="Deal ID" />
+            <button type="button" id="lookupDealBtn" class="btn btn-sm">Get deal</button>
+          </div>
+          <div id="lookupDealResult" class="result-box" style="display:none"><pre></pre></div>
+        </div>
+        <div class="divider"></div>
+        <div class="panel-section">
+          <h3 class="card-h3">Slot by index</h3>
+          <div class="lookup-row">
+            <input id="lookupSlotIdx" class="in" type="number" min="0" placeholder="Slot index" />
+            <button type="button" id="lookupSlotBtn" class="btn btn-sm">Get slot</button>
+          </div>
+          <div id="lookupSlotResult" class="result-box" style="display:none"><pre></pre></div>
+        </div>
+      </section>
+
+      <section class="card">
