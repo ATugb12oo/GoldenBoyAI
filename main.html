@@ -886,3 +886,77 @@
     Lookup: single grab by ID, single deal by ID, single slot by index.
     Covfefe: read bytes32 value by key (64 hex chars).
     Big-league claim: check claim index reward amount.
+    Config: commander, treasury, oracle, deal maker, vault, genesis, sweep cap, protocol rev.
+    Epoch & chain info: current epoch, epoch end time, time remaining, contract balance, remaining sweep cap.
+    Quick actions: Refresh all (stats + config + chain info).
+    Contract ABI: statsView, getGrabsBatch, getDealsBatch, getSlotBatch, getEpochSnapshot, getGrab, getDeal, getSlot,
+    getCovfefe, claimRewardAmount, getConfig, protocolRevision, currentEpochEndTime, contractBalance, remainingSweepCap, currentEpochIndex.
+    Requires ethers v6 and a Web3 wallet (e.g. MetaMask). Not financial or regulatory advice.
+  -->
+  <script>
+(function () {
+  'use strict';
+  /*
+   * YugeAI contract view functions used by this dashboard:
+   * statsView() -> totalGrabs, totalDeals, totalSlots, totalSwept, vaultBal, currentEpoch, paused
+   * getGrabsBatch(fromId, limit) -> grabIds[], intensityBpsList[], loggedAtList[], epochIds[], finalizedList[]
+   * getDealsBatch(fromId, limit) -> dealIds[], amounts[], createdAtBlocks[], parties[], actives[], closeds[]
+   * getSlotBatch(fromIndex, limit) -> slotIndices[], bandBpsList[], sealedAtList[], variantIds[], sealedList[]
+   * getEpochSnapshot(epochId) -> recordedAtBlock, totalGrabs, sumIntensityBps, recorded
+   * getGrab(grabId) -> intensityBps, loggedAt, epochId, finalized
+   * getDeal(dealId) -> amountWei, createdAtBlock, closedAtBlock, party, active, closed
+   * getSlot(slotIndex) -> bandBps, sealedAt, variantId, sealed
+   * getCovfefe(bytes32 key) -> value, updatedBlock
+   * claimRewardAmount(claimIndex) -> rewardWei
+   * getConfig() -> commander, treasury, oracle, dealMaker, vault, genesis, sweepCap, deployBlock
+   * protocolRevision() -> rev
+   * currentEpochEndTime() -> timestamp
+   * contractBalance() -> wei
+   * remainingSweepCap() -> wei
+   * currentEpochIndex() -> epochId
+   */
+  // GoldenBoyAI dashboard — reference indices for stats display
+  // Grabs tab: fromId and limit; Deals tab: fromId and limit; Slots tab: fromIndex and limit
+  // Epoch tab: epochId for getEpochSnapshot. Lookup: grabId, dealId, slotIndex. Covfefe: 64-char hex key.
+  // Claim: claimIndex. Config: getConfig() and protocolRevision(). Chain: currentEpochIndex, currentEpochEndTime, contractBalance, remainingSweepCap.
+  // Format: shortAddr for addresses; formatWei for wei amounts; String() for bigint. Status message in #status.
+  // Bind contract on first use when address is valid. Provider from window.ethereum; signer from getSigner() after eth_requestAccounts.
+  var ABI = [
+    'function statsView() view returns (uint256 totalGrabs, uint256 totalDeals, uint256 totalSlots, uint256 totalSwept, uint256 vaultBal, uint256 currentEpoch, bool paused)',
+    'function getGrabsBatch(uint256 fromId, uint256 limit) view returns (uint256[] grabIds, uint88[] intensityBpsList, uint40[] loggedAtList, uint64[] epochIds, bool[] finalizedList)',
+    'function getDealsBatch(uint256 fromId, uint256 limit) view returns (uint256[] dealIds, uint96[] amounts, uint64[] createdAtBlocks, address[] parties, bool[] actives, bool[] closeds)',
+    'function getSlotBatch(uint256 fromIndex, uint256 limit) view returns (uint256[] slotIndices, uint88[] bandBpsList, uint40[] sealedAtList, uint64[] variantIds, bool[] sealedList)',
+    'function getEpochSnapshot(uint256 epochId) view returns (uint64 recordedAtBlock, uint32 totalGrabs, uint128 sumIntensityBps, bool recorded)',
+    'function getGrab(uint256 grabId) view returns (uint88 intensityBps, uint40 loggedAt, uint64 epochId, bool finalized)',
+    'function getDeal(uint256 dealId) view returns (uint96 amountWei, uint64 createdAtBlock, uint64 closedAtBlock, address party, bool active, bool closed)',
+    'function getSlot(uint256 slotIndex) view returns (uint88 bandBps, uint40 sealedAt, uint64 variantId, bool sealed)',
+    'function getCovfefe(bytes32 key) view returns (bytes32 value, uint64 updatedBlock)',
+    'function claimRewardAmount(uint256 claimIndex) view returns (uint256)',
+    'function getConfig() view returns (address cmd, address tr, address oracle, address dm, address v, uint256 genesis, uint256 cap, uint256 blockDeploy)',
+    'function protocolRevision() view returns (uint256)',
+    'function currentEpochEndTime() view returns (uint256)',
+    'function contractBalance() view returns (uint256)',
+    'function remainingSweepCap() view returns (uint256)',
+    'function currentEpochIndex() view returns (uint256)'
+  ];
+  var LABELS = {
+    grabs: 'Grabs', deals: 'Deals', slots: 'Slots', epochs: 'Epochs', covfefe: 'Covfefe', claim: 'Big-league claim',
+    config: 'Config', chainInfo: 'Epoch & chain info', lookup: 'Lookup single item', stats: 'Stats', contract: 'Contract',
+    refreshAll: 'Refresh all', connect: 'Connect wallet', refresh: 'Refresh', loadGrabs: 'Load grabs', loadDeals: 'Load deals',
+    loadSlots: 'Load slots', loadEpoch: 'Load snapshot', getGrab: 'Get grab', getDeal: 'Get deal', getSlot: 'Get slot',
+    getCovfefe: 'Get covfefe', checkClaim: 'Check reward', loadConfig: 'Load config', loadChainInfo: 'Refresh chain info'
+  };
+  var provider = null;
+  var signer = null;
+  var contract = null;
+
+  function el(id) { return document.getElementById(id); }
+  function setStatus(msg) { var s = el('status'); if (s) s.textContent = msg; }
+  function shortAddr(addr) {
+    if (!addr || addr.length < 12) return addr || '—';
+    return addr.slice(0, 8) + '…' + addr.slice(-6);
+  }
+  function formatWei(v) {
+    try {
+      var b = typeof v === 'bigint' ? v : BigInt(v);
+      return (Number(b) / 1e18).toFixed(6);
